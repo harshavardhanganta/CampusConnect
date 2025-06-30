@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scroll through profiles</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Lugrasimo&family=Oleo+Script:wght@400;700&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Lugrasimo&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
+    <style>
+        fieldset {
+            border: 2px solid black;
+            margin-bottom: 20px; /* used to create a gap at the bottom of the box. */
+            width: 90%;
+            background-image: url(image12.jpg);
+            background-position: center;    
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .photo {
+            float: left; /* Float the photo to the left. */  
+            margin-right: 25px; /* Add margin to the right of photo to separate it from the info section. */
+        }
+        .photo img {
+            max-width: 500px; /* Setting a maximum width of 500px for images. */
+        }
+        .info {
+            font-size: 18px;
+            font-family: "Oleo Script", system-ui;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .info p {
+            margin-bottom: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 80px;
+            font-family: "Sedgwick Ave Display", cursive;
+            font-weight: 400;
+            font-style: normal;
+            color: cadetblue;
+        }
+        .rating-container {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 35px;
+            color: #4c4a4a;
+
+        }
+        .rating-container .star {
+            cursor: pointer;
+        }
+        .rating-container .star:hover,
+        .rating-container .star.active {
+            color: rgb(244, 204, 27);
+        }
+        .rating-container button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            font-size: 18px;
+            background-color: rgb(248, 206, 20);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .rated-value {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Students Profiles</h1>
+    <div class="a">
+        <!-- Here the content written in the function is obtained. -->
+    </div>
+    <script>
+        function profiles(){
+            fetch('students.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const div1 = document.querySelector('.a');
+                for(var i=0; i < data.length; i++){
+                    var fs = document.createElement("fieldset");
+                    fs.classList.add('box');
+                    var div2 = document.createElement("div");
+                    div2.classList.add('photo');
+                    var image = document.createElement("img");
+                    image.src = data[i].Photo;
+                    div2.appendChild(image);
+                    var div3 = document.createElement("div");
+                    div3.classList.add('info');
+                    // Append profile information to div3
+                    var name = document.createElement('p');
+                    name.textContent = "Name:"+data[i].Name;
+                    div3.appendChild(name);
+                    var rollno = document.createElement('p');
+                    rollno.textContent = "Roll Number:"+data[i]["IITB Roll Number"];
+                    div3.appendChild(rollno);
+                    var year = document.createElement('p');
+                    year.textContent = "Year Of Study:"+data[i]["Year of Study"];
+                    div3.appendChild(year);
+                    var age = document.createElement('p');
+                    age.textContent = "Age:"+data[i].Age;
+                    div3.appendChild(age);
+                    var gender = document.createElement('p');
+                    gender.textContent = "Gender:"+data[i].Gender;
+                    div3.appendChild(gender);
+                    var interests = document.createElement('p');
+                    interests.textContent = "Interests:"+data[i].Interests.join(",");
+                    div3.appendChild(interests);
+                    var hobbies = document.createElement('p');
+                    hobbies.textContent = "Hobbies:"+data[i].Hobbies.join(",");
+                    div3.appendChild(hobbies);
+                    var email = document.createElement('p');
+                    email.textContent = "Email:"+data[i].Email;
+                    div3.appendChild(email);
+                    // Add the rating system for each profile
+                    div3.appendChild(createRatingSystem(data[i]["IITB Roll Number"]));
+                    fs.appendChild(div2);
+                    fs.appendChild(div3);
+                    div1.appendChild(fs);
+                }
+            })
+            .catch(error => console.error('Error fetching student data:', error));
+        }           
+
+        function createRatingSystem(rollno) {
+            var ratingContainer = document.createElement('div');
+            ratingContainer.classList.add('rating-container');
+            var ratingText = document.createElement('span');
+            ratingText.textContent = "Give Rating: ";
+            ratingContainer.appendChild(ratingText);
+            for (var j = 1; j <= 5; j++) {
+                var star = document.createElement('span');
+                star.classList.add('star');
+                star.textContent = "★";
+                star.setAttribute('data-rollno', rollno);
+                star.setAttribute('data-rating', j);
+                star.addEventListener('click', handleStarClick);
+                ratingContainer.appendChild(star);
+            }
+
+            var submitButton = document.createElement('button');
+            submitButton.textContent = "Submit";
+            submitButton.setAttribute('data-rollno', rollno);
+            submitButton.addEventListener('click', handleSubmitClick);
+            ratingContainer.appendChild(submitButton);
+
+            var clearButton = document.createElement('button');
+            clearButton.textContent = "Clear";
+            clearButton.setAttribute('id', 'clear-button');
+            clearButton.addEventListener('click', handleClearClick);
+            ratingContainer.appendChild(clearButton);
+
+            return ratingContainer;
+        }
+
+        function handleStarClick(event) {
+            var rollno = event.target.getAttribute('data-rollno');
+            var rating = event.target.getAttribute('data-rating');
+            var stars = event.target.parentNode.querySelectorAll('.star');
+            stars.forEach(function(star) {
+                if (star.getAttribute('data-rating') <= rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function handleSubmitClick(event) {
+            var rollno = event.target.getAttribute('data-rollno');
+            var selectedRating = 0;
+            var stars = event.target.parentNode.querySelectorAll('.star');
+            stars.forEach(function(star) {
+                if (star.classList.contains('active')) {
+                    selectedRating = parseInt(star.getAttribute('data-rating'));
+                }
+            });
+            if (selectedRating === 0) {
+                alert("Please select a rating!");
+                return;
+            }
+            // Remove any existing rated value
+            var existingRatedValue = event.target.parentNode.querySelector('.rated-value');
+            if (existingRatedValue) {
+                existingRatedValue.remove();
+            }
+            // Update UI to display the rated value
+            var ratedValue = document.createElement('div');
+            ratedValue.classList.add('rated-value');
+            ratedValue.textContent = "Rated: " + selectedRating + "/5";
+            event.target.parentNode.appendChild(ratedValue);
+        }
+        function handleClearClick(event) {
+            var stars = event.target.parentNode.querySelectorAll('.star');
+            stars.forEach(function(star) {
+                star.classList.remove('active');
+            });
+            // Remove any existing rated value
+            var existingRatedValue = event.target.parentNode.querySelector('.rated-value');
+            if (existingRatedValue) {
+                existingRatedValue.remove();
+            }
+        }
+        profiles();
+    </script>
+</body>
+</html>

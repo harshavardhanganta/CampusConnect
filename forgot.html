@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Forgot password</title>
+        <!-- Linking fonts and icons -->    
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Charm:wght@400;700&family=Dancing+Script:wght@400..700&family=Honk&family=Lugrasimo&family=Oleo+Script:wght@400;700&family=Quintessential&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <!-- Styles for the page -->
+        <style>
+            body{
+                text-align: center;
+                background-image: url(image11.png);
+                background-position: center;
+                background-attachment: fixed;
+                background-size: cover;
+            }
+            input[type="text"]{
+                border: 2px solid black;
+                width: 50%;
+                padding: 9px 27px;
+                margin-bottom: 10px;
+                box-sizing: border-box;
+                border-radius: 20px;
+            }
+            label{
+                font-size: larger;
+            }
+            button{
+                background-color: transparent;
+                color: rgb(26, 224, 26);
+                border: none;
+                cursor: pointer;
+                font-size: 15px;
+                border-radius: 30px;
+            }
+            #username{
+                background-color: transparent;
+            }
+            input[type="text"]::placeholder {
+                text-align: center;
+                font-style: italic;
+                color: black;
+            }
+            a{
+                text-decoration: none;
+            }
+            .input-icon {
+                position: absolute;
+                padding-top: 11px;
+                padding-left: 10px;
+            }
+            .img {
+                border: 1px solid;
+                width: 25%;
+                margin: 0 auto;
+                overflow: hidden;
+                backdrop-filter: blur(7px);
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 20px;
+            }
+            h1 {
+                font-family: "Bungee Spice", sans-serif;
+                font-weight: 400;
+                font-style: normal;     
+            }
+        </style>
+    </head>
+    <body>
+        <h1 style="font-size: 40px;">Forgot Password</h1>
+        <p style="color: rgba(240, 252, 5, 0.933);">(Please fill your username and submit to answer the secret question to know your password)</p>
+        <div class="img">
+        <form>
+            <label for="username"><h2><i>Username:</i></h2></label>
+            <div class="input-container">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="username" name="username" placeholder="username">
+            </div>                
+            <button type="button" onclick="forgotpassword()"><h3><b>Submit</b></h3></button>
+            <p id="demo1" style="color: rgb(244, 19, 19);font-size: large;"></p><br>
+            <button type="button"><a href="login.html" style="color: rgb(26, 224, 26);"><h3><b>Back to login</b></h3></a></button>
+        </form>  
+        </div>
+        <!-- JavaScript for fetching data and processing password retrieval -->
+         <script>
+            function forgotpassword(){
+                var username = document.getElementById("username").value.trim();
+                document.getElementById('demo1').innerHTML = "";
+                // Fetch the login data from login.json
+                fetch('login.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Check each user in the data
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].username === username) {
+                            document.getElementById('demo1').innerHTML = data[i].secret_question;
+                            var secretanswer = document.createElement("input");
+                            secretanswer.setAttribute('type', 'text');
+                            secretanswer.setAttribute('id', 'secretanswer');
+                            secretanswer.setAttribute('placeholder', 'Enter your secret_answer');
+                            secretanswer.style.display = 'block';
+                            secretanswer.style.margin = '0 auto';
+                            document.getElementById('demo1').appendChild(secretanswer);
+                            //setAttribute is used to give type,id,placeholder,....
+                            //display as block is used to append the input box in new line. 
+                            //margin as 0 auto centers the input box.
+                            //append is used for appending multiple arguments and appendChild is used for appending single argument.
+                            var submit = document.createElement("button");
+                            submit.textContent = "Submit";
+                            submit.setAttribute('type','button');
+                            submit.setAttribute('onclick','pass(' + i + ')');
+                            submit.style.display = 'block';
+                            submit.style.margin = '0 auto';
+                            document.getElementById('demo1').appendChild(submit);
+                            return;
+                            //textcontent is used to represent the button with that text.
+                            //'+ i +' is used in pass() as it makes the variable i in the function pass() equal to the value of i in the for loop.
+                        }
+                    }
+                    // If no matching username is found
+                    document.getElementById('demo1').innerHTML = "&ensp;&ensp;Username is invalid.";
+                    //here &ensp; is used to add tab space before the textcontent.
+                })
+                .catch(error => console.error('Error fetching login data:', error));
+            }
+            //we should define the function pass() outside the function forgotpassword() to access the function globally.
+            function pass(i){
+                var sa = document.getElementById('secretanswer').value.trim();
+                document.getElementById('demo1').innerHTML = "";   
+                //here if the username is correct then after giving the secretanswer and submitting gives only the single message that is the secretquestion and secretanswer input box are removed.   
+                //The value of i is obtained from the for loop in the function forgotpassword().
+                //we need to do again fetch as we are using data[i] in this function also. 
+                fetch('login.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {    
+                    if(data[i].secret_answer === sa){
+                        var message = document.createElement('p');
+                        message.textContent = "Your Password is: "+data[i].password;
+                        document.getElementById('demo1').appendChild(message);
+                        return;
+                    }
+                    var message = document.createElement('p');
+                    message.textContent = "Incorrect secretanswer."
+                    document.getElementById('demo1').appendChild(message);
+                })
+                .catch(error => console.error('Error fetching login data:',error));
+            }
+        </script>
+    </body>
+</html>

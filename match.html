@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Match</title>
+    <!-- Linking fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&family=Charm:wght@400;700&family=Dancing+Script:wght@400..700&family=Honk&family=Lugrasimo&family=Nabla&family=Oleo+Script:wght@400;700&family=Quintessential&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
+    <!-- Styling for the page -->
+    <style>
+        fieldset {
+            border: 0px; /* used to create a gap at the bottom of the box. */
+            width: 90%;
+        }
+        .photo {
+            float: left; /* Float the photo to the left. */  
+            margin-right: 25px; /* Add margin to the right of photo to separate it from the info section. */
+        }
+        .photo img {
+            max-width: 500px; /* Setting a maximum width of 500px for images. */
+        }
+        .info {
+            font-size: 18px;
+            font-family: "Lugrasimo", cursive;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .info p {
+            margin-bottom: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 48px;
+            font-family: "Nabla", system-ui;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings: /*used for special font*/
+            "EDPT" 100,
+            "EHLT" 12;
+        }
+        button {
+            background-color: blue;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+        }
+        .b {
+            display: flex;
+            justify-content: center;
+        }
+        .vid {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Video background -->
+    <video autoplay loop muted plays-inline class="vid">
+        <source src="video2.mp4" type="video/mp4">
+    </video> 
+    <!-- Header -->
+    <h1>Your Partner Details</h1>
+    <!-- Container for partner details -->
+    <div class="a">
+        <!-- Placeholder for partner details populated by JavaScript -->
+    </div>
+    <!-- Button container -->
+    <div class="b">
+        <!-- Try Again button -->
+        <button type="button"><a href="dating.html">Try Again</a></button>
+    </div>
+    <!-- SMTP.js library for sending emails -->
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <!-- JavaScript code -->
+    <script>
+        // Function to display partner profile details
+        function profile(student) {
+            // Clear any previous profile details
+            const div1 = document.querySelector('.a');
+            div1.innerHTML = "";
+            // Create fieldset to hold profile details
+            var fs = document.createElement("fieldset");
+            fs.classList.add('box');
+            // Create div for photo
+            var div2 = document.createElement("div");
+            div2.classList.add('photo');
+            // Create image element
+            var image = document.createElement("img");
+            image.src = student.Photo; // Set image source
+            div2.appendChild(image); // Append image to div
+            image.alt = "Student Photo"; // Set alternative text for the image
+            // Create div for profile info
+            var div3 = document.createElement("div");
+            div3.classList.add('info');
+            // Create paragraphs for each detail
+            var name = document.createElement('p');
+            name.textContent = "Name:" + student.Name;
+            div3.appendChild(name);
+            var rollno = document.createElement('p');
+            rollno.textContent = "Roll Number:" + student["IITB Roll Number"];
+            div3.appendChild(rollno);
+            var year = document.createElement('p');
+            year.textContent = "Year Of Study:" + student["Year of Study"];
+            div3.appendChild(year);
+            var age = document.createElement('p');
+            age.textContent = "Age:" + student.Age;
+            div3.appendChild(age);
+            var gender = document.createElement('p');
+            gender.textContent = "Gender:" + student.Gender;
+            div3.appendChild(gender);
+            var interests = document.createElement('p');
+            interests.textContent = "Interests:" + student.Interests.join(",");
+            div3.appendChild(interests);
+            var hobbies = document.createElement('p');
+            hobbies.textContent = "Hobbies:" + student.Hobbies.join(",");
+            div3.appendChild(hobbies);
+            var email = document.createElement('p');
+            email.textContent = "Email:" + student.Email;
+            div3.appendChild(email);
+            // Create button to send email to partner
+            var sendEmailButton = document.createElement('button');
+            sendEmailButton.style.color = "white";
+            sendEmailButton.style.cursor = "pointer";
+            sendEmailButton.textContent = "Send Email";
+            // Add event listener for send email button
+            sendEmailButton.addEventListener('click', function() {
+                sendEmail(student.Email); // Call sendEmail function with partner's email
+            });
+            div3.appendChild(sendEmailButton); // Append send email button to profile info div
+            fs.appendChild(div2); // Append photo div to fieldset
+            fs.appendChild(div3); // Append profile info div to fieldset
+            div1.appendChild(fs); // Append fieldset to container
+        }
+
+        // Function to send email
+        function sendEmail(receiverEmail) {
+            const email2 = localStorage.getItem('email'); // Get user's email
+            // Send email using SMTP.js library
+            Email.send({
+                Host: "smtp.gmail.com",
+                Username: email2,
+                Password: "Enter your password",               
+                To: receiverEmail, // Receiver's email
+                From: email2, // Sender's email
+                Subject: "About Dating Partner.", // Email subject
+                Body: "Hello.\nI am matching with your interests and hobbies mostly.\nLet's meet for further proceedings if you are interested." // Email body
+            })
+            .then(function (message) {
+                alert("Email sent successfully!"); // Show success message
+            })
+            .catch(function (error) {
+                alert("An error occurred while sending the email. Please try again later."); // Show error message
+                console.error("Error sending email:", error); // Log error to console
+            });
+        }
+      
+        // Function to find partner based on preferences
+        function findpartner(gender, interests, hobbies, rollno) {
+            // Get container for partner details
+            const div1 = document.querySelector('.a');
+            // Show loading message
+            div1.innerHTML = "Loading...";
+            let initialmatches = [];
+            
+            // Fetch data from JSON file
+            fetch('students.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    students = data; // Store fetched data
+                    
+                    // Filter initial matches based on gender
+                    initialmatches = students.filter(profile => 
+                        profile["IITB Roll Number"] !== rollno && (
+                            (gender === "Female" && profile.Gender === "Male") ||
+                            (gender === "Male" && profile.Gender === "Female") ||
+                            (gender === "Other" && profile.Gender === "Other")
+                        )
+                    );
+
+                    let maxMatches = [];
+                    let maxIntersection = 0;
+                    let allIntersectionsZero = true;
+
+                    // Iterate through initial matches and calculate intersections
+                    for(const profile of initialmatches) {
+                        let score_interests = 0;
+                        let score_hobbies = 0;   
+                        
+                        // Calculate intersection for interests
+                        for (const interest of interests) {
+                            if (profile["Interests"].includes(interest)) {
+                                score_interests += 1;
+                            }
+                        }
+                        // Calculate intersection for hobbies
+                        for (const hobby of hobbies) {
+                            if (profile["Hobbies"].includes(hobby)) {
+                                score_hobbies += 1;
+                            }
+                        }
+
+                        let totcal = score_interests + score_hobbies;
+                        
+                        // Check if the intersection score is not zero
+                        if (totcal > 0) {
+                            allIntersectionsZero = false;
+                        }
+
+                        if (totcal > maxIntersection) {
+                            maxIntersection = totcal;
+                            maxMatches = [profile];
+                        } else if (totcal === maxIntersection) {
+                            maxMatches.push(profile);
+                        }
+                    };
+                    
+                    // Display results
+                    if (allIntersectionsZero) {
+                        div1.innerHTML = "<h2 style='text-align: center;'>No matches found with these interests and hobbies.</h2>";
+                    } else if (maxMatches.length === 0) {
+                        div1.innerHTML = "<h2 style='text-align: center;'>No matches found with these interests and hobbies.</h2>";
+                    } else {
+                        const perfectMatch = maxMatches[0]; // Choose the first match
+                        profile(perfectMatch); // Display profile details
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching student data:', error); // Log error to console
+                    div1.innerHTML = "<h2>Error fetching data</h2>"; // Show error message
+                });
+        }
+        // Retrieve user preferences from local storage
+        const gen2 = localStorage.getItem('gen');
+        const rol2 = localStorage.getItem('rol');
+        const int2 = JSON.parse(localStorage.getItem('int'));
+        const hob2 = JSON.parse(localStorage.getItem('hob'));
+        // Call function to find partner based on preferences
+        findpartner(gen2, int2, hob2, rol2);
+    </script>
+
+</body>
+</html>

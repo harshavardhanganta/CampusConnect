@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Matching</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Honk&family=Lugrasimo&family=Oleo+Script:wght@400;700&family=Quintessential&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
+        <style>
+            body{
+                text-align: center;
+                background-image: url(image10.jpg);
+                background-position: center;
+                background-attachment: fixed;
+                background-size: cover;
+            }
+            p {
+                color: rgb(39, 235, 4);
+                font-size: 20px;
+            }
+            h1 {
+                color: transparent;
+                font-size: 50px;
+                font-family: cursive;
+                background-image: url(giphy1.gif);
+                background-position: center;
+                background-clip: text;
+            }
+            input[type="text"],input[type="number"],input[type="email"]{
+                width: 40%;
+            }
+            button {
+                border-radius: 20px;
+            }
+            a{
+                text-decoration: none;
+            }
+            .p1 {
+                border: 1px solid black;
+                width: 25%;
+                margin: 0 auto;
+                overflow: hidden;
+                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 20px;
+            }
+            .p2 {
+                margin-bottom: 10px;
+            }
+            h4 {
+                font-family: "Quintessential", serif;
+                font-weight: 400;
+                font-style: normal;
+            }
+        </style>
+    </head>
+    <body>
+        <!--couple with heart symbol-->
+
+        <h1>Find Your Partner&#x2764;&#xfe0f;</h1>
+        <div class="p1">
+            <div class="p2">
+                <form id="myform">
+                <label for="rollno"><h4>Roll Number:</h4></label>
+                <input type="text" id="rollno" name="rollno">
+                <label for="name"><h4>Name:</h4></label>
+                <input type="text" id="name" name="name">
+                <label for="year"><h4>Year Of Study:</h4></label>
+                <input type="text" id="year" name="year">
+                <label for="age"><h4>Age:</h4></label>
+                <input type="number" id="age" name="age">
+                <label for="gender"><h4>Gender:</h4></label>
+                <input type="radio" id="Male" name="gender" value="Male">
+                <label for="Male">Male</label>
+                <input type="radio" id="Female" name="gender" value="Female">
+                <label for="Female">Female</label>
+                <input type="radio" id="other" name="gender" value="Other">
+                <label for="other">Other</label>
+                <label for="email"><h4>Email:</h4></label>
+                <input type="email" id="email" name="email">
+                <label for="interests"><h4>Interests:</h4></label>
+                <input type="checkbox" value="Traveling" name="interests">
+                <label for="traveling">Traveling</label>
+                <input type="checkbox" value="Sports" name="interests">
+                <label for="sports">Sports</label>
+                <input type="checkbox" value="Movies" name="interests">
+                <label for="movies">Movies</label>
+                <input type="checkbox" value="Music" name="interests">
+                <label for="music">Music</label><br>
+                <input type="checkbox" value="Literature" name="interests">
+                <label for="literature">Literature</label>
+                <input type="checkbox" value="Technology" name="interests">
+                <label for="technology">Technology</label>
+                <input type="checkbox" value="Fashion" name="interests">
+                <label for="fashion">Fashion</label>
+                <input type="checkbox" value="Art" name="interests">
+                <label for="art">Art</label>
+                <label for="hobbies"><h4>Hobbies:</h4></label>
+                <input type="checkbox" value="Reading" name="hobbies">
+                <label for="reading">Reading</label>
+                <input type="checkbox" value="Cooking" name="hobbies">
+                <label for="cooking">Cooking</label>
+                <input type="checkbox" value="Coding" name="hobbies">
+                <label for="coding">Coding</label>
+                <input type="checkbox" value="Gardening" name="hobbies">
+                <label for="gardening">Gardening</label><br>
+                <input type="checkbox" value="Painting" name="hobbies">
+                <label for="painting">Painting</label>
+                <input type="checkbox" value="Watching YouTube/Instagram" name="hobbies">
+                <label for="watching youTube/instagram">Watching YouTube/Instagram</label><br>
+                <input type="checkbox" value="Playing musical instruments" name="hobbies">
+                <label for="playing musical instruments">Playing musical instruments</label>
+                <input type="checkbox" value="Photography" name="hobbies">
+                <label for="photography">Photography</label><br><br>
+                <p id="err"></p>
+                <button type="submit" style="background-color: blue;cursor: pointer; color: white;">Find Partner</button><br><br>
+                <button type="button" style="background-color: blue;cursor: pointer;"><a href="scroll_or_swipe.html" style="color: white">Scroll through profiles</a></button>
+                <button type="button" style="background-color: blue;cursor: pointer;"><a href="login.html" style="color: white;">Logout</a></button>
+                </form>
+            </div>
+        </div>
+        <!-- JavaScript for form validation and submission -->
+        <script>    
+            const form = document.getElementById('myform');
+
+            // Add event listener for form submission
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                // Obtain values from the form
+                if(validateForm()){
+                    const gender1 = document.querySelector('input[name="gender"]:checked').value;
+                    const interests1 = Array.from(document.querySelectorAll('input[name="interests"]:checked')).map(input => input.value);
+                    const hobbies1 = Array.from(document.querySelectorAll('input[name="hobbies"]:checked')).map(input => input.value);
+                    const roll1 = document.getElementById('rollno').value;
+                    const email1 = document.getElementById('email').value;
+                    // Store values in local storage for later us
+                    localStorage.setItem('gen', gender1);
+                    localStorage.setItem('int', JSON.stringify(interests1));
+                    localStorage.setItem('hob', JSON.stringify(hobbies1));
+                    localStorage.setItem('rol', roll1);
+                    localStorage.setItem('email', email1);
+
+                    window.location.href = "match.html"; // Redirect to match page
+                }
+            })
+            // Function to validate form inputs
+            function validateForm() {
+                const rollno = document.getElementById('rollno').value;
+                const name = document.getElementById('name').value;
+                const year = document.getElementById('year').value;
+                const age = document.getElementById('age').value;
+                const email = document.getElementById('email').value;
+                const hobbies = Array.from(document.querySelectorAll('input[name="hobbies"]:checked')).map(input => input.value);
+                const interests = Array.from(document.querySelectorAll('input[name="interests"]:checked')).map(input => input.value);
+                // Check if required fields are empty
+                if(rollno === '' || name === '' || year === '' || age === '' || email === '' || hobbies.length === 0 || interests.length === 0) {
+                    document.getElementById('err').textContent = 'Please fill all the input fields.';
+                    return false;
+                }
+                // Clear any previous error message
+                document.getElementById('err').textContent = '';
+                return true;
+            }
+        </script>   
+    </body>
+</html>

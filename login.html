@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+        <head>
+            <title>Dating website</title>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Dancing+Script:wght@400..700&family=Honk&family=Lugrasimo&family=Oleo+Script:wght@400;700&family=Quintessential&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
+            <!--using style for styling the website-->
+            <!--field set is used to create the box for login information-->
+            <!--used margin as auto to keep the box containing login details at middle-->
+            <!--used cursor for which type to present when the arrow is placed at login or forgot password-->
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <style>
+                h1 {
+                    font-style: italic;
+                    font-size: 50px;
+                    color: transparent;
+                    background-image: url(giphy1.gif);
+                    background-position: center;
+                    background-clip: text;
+                }
+                body {
+                    background-image: url(image3.png);
+                    text-align: center;
+                    background-size: cover;
+                    background-position: center;
+                    background-attachment: fixed;
+                }
+                input[type="text"],
+                input[type="password"] {
+                    border: none;
+                    width: 20%;
+                    padding: 8px 27px;   
+                    margin-bottom: 20px;           
+                    box-sizing: border-box;
+                    border-radius: 20px;
+                }
+                label{
+                    font-size: large;
+                }
+                button {
+                    background: rgba(235, 153, 76, 0.7);
+                    border: 2px solid rgb(122, 48, 28);
+                    cursor: pointer;
+                    font-size: larger;
+                    border-radius: 20px;
+                }     
+                #password,#username{
+                    background: rgba(219, 152, 90, 0.5);
+                    border-width: none;
+                    color: black;
+                }
+                a{
+                    text-decoration: none;
+                    font-size: large
+                }
+                input[type="text"]::placeholder,
+                input[type="password"]::placeholder {
+                    color: rgb(146, 16, 16);
+                    font-style: italic;
+                    text-align: center;
+                }
+                .input-icon {
+                    position: absolute;
+                    margin-left: 8px;
+                    margin-top: 9px;
+                    color: rgb(60, 4, 26);
+                }
+                h2 {
+                    font-family: "Charm", cursive;
+                    font-weight: 400;
+                    font-style: normal;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>&#x2764;&#xfe0f;Dating Website&#x2764;&#xfe0f;</h1><br>
+            <form>
+                <label for="username" style="color: rgb(108, 25, 25);"><h2><b>Username:</b></h2></label>
+                <div style="position: relative;">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="username" name="username" placeholder="username">
+                </div>                
+                <label for="password" style="color: rgb(108, 25, 25);"><h2><b>Password:</b></h2></label>
+                <div style="position: relative;">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" name="password" placeholder="password">
+                </div>                
+                <button type="button" onclick="loginstep()" style="color: rgb(187, 7, 7);"><b>Login</b></button><br>
+                <pre id="demo" style="color: red;font-size: large;"></pre><br>
+                <button type="button"><a href="forgot.html" style="color: rgb(187, 7, 7);"><b>Forgot Password?</b></a></button><br><br>
+            </form>
+             <!-- === is used because Both the value and the type must be the same for the comparison to return true-->
+             <!-- !== is used for strictly not equal-->
+            <script>
+                function loginstep(){
+                    var username = document.getElementById("username").value.trim();
+                    var password = document.getElementById("password").value.trim();
+                    document.getElementById("demo").innerHTML = "";
+                    //we assigned value to id demo as empty,to not repeat error messages.
+                    //we used trim() to trim whitespace from the username and password before comparing them.
+                    //username and password are stored in respective variables.
+                    //fetch is used to fetch the file from the server.
+                    fetch('login.json')
+                    //This part checks the response of the fetched file.
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    //This part uses the data of the file and returning the correct error messages if there is an error.
+                    .then(data => {
+                        // Checks each user in the data.
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].username === username) {
+                                if (data[i].password === password) {
+                                    window.location.href = "dating.html";
+                                    document.getElementById('username').value = "";
+                                    document.getElementById('password').value = "";
+                                    // Redirect if both username and password match.
+                                    //Next it clears the username input.
+                                    return;
+                                } else {
+                                    //error message returned for wrong password.
+                                    //it also clears password input to enter again.
+                                    document.getElementById('demo').innerHTML = " Incorrect password. Please try again.";
+                                    document.getElementById('password').value = "";
+                                    return;
+                                }
+                            }
+                        }
+                        // If no matching username is found then this error message is returned.
+                        //Also the username and password inputs are cleared as they are incorrect.
+                        document.getElementById('demo').innerHTML = " Username is invalid.";
+                        document.getElementById('username').value = "";
+                        document.getElementById('password').value = "";
+                    })
+                    //If there's any error during the fetch process, it's caught here and logged to the console.
+                    .catch(error => console.error('Error fetching login data:', error));
+                }
+            </script>
+    </body>
+</html>
